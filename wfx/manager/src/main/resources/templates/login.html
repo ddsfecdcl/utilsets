@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>登录</title>
+    <base th:href="${#request.getContextPath()+'/'}">
+    <link rel="stylesheet" href="layui/css/layui.css">
+</head>
+<body>
+<div class="layui-container">
+    <div style="padding: 20px; background-color: #FFB800; width: 500px; margin: 120px auto;">
+        <div class="layui-row layui-col-space15">
+            <div class="layui-col-md12">
+                <div class="layui-card">
+                    <div class="layui-card-header">登录</div>
+                    <div class="layui-card-body">
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">用户名</label>
+                            <div class="layui-input-block">
+                                <input type="text" id="username" name="username"  autocomplete="off" placeholder="请输入用户名" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">密码</label>
+                            <div class="layui-input-block">
+                                <input type="text" id="password" name="password"  placeholder="请输入密码" autocomplete="off" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <button type="button" id="btnSubmit" class="layui-btn layui-btn-lg layui-btn-normal layui-col-md4 layui-col-md-offset4" lay-submit="" lay-filter="demo1">登录</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="layui/layui.js"></script>
+<script src="js/jquery-3.1.1.js"></script>
+<script>
+    //一般直接写在一个js文件中
+    layui.use(['layer', 'form'], function(){
+        var layer = layui.layer
+            ,form = layui.form;
+
+        $("#btnSubmit").click(function () {
+            var u = $("#username").val();
+            var p = $("#password").val();
+            $.post("user/login", {username:u,password:p}, function (data) {
+                console.log(JSON.stringify(data));
+                if(data.code == "10000"){
+                    location.href="page/home";
+                }else{
+                    layer.alert(data.desc);
+                }
+            });
+        });
+    });
+</script>
+</body>
+</html>

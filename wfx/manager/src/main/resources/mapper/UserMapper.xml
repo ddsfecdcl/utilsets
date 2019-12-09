@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qianfeng.manager.security.dao.UserDAO">
+    <resultMap id="userMap" type="com.qianfeng.manager.security.entity.UserInfo">
+        <id property="id" column="user_id"></id>
+        <result property="name" column="user_name"></result>
+        <result property="account" column="account"></result>
+        <result property="remark" column="remark"></result>
+        <result property="type" column="user_type"></result>
+        <result property="enabled" column="enabled"></result>
+        <result property="loginTime" column="login_time"></result>
+        <result property="self" column="self"></result>
+        <association property="role" column="role_id" select="com.qianfeng.manager.security.dao.UserDAO.findRoleByCode"></association>
+    </resultMap>
+
+    <select id="findByAccountAndPassword" resultMap="userMap">
+        SELECT * FROM user_info WHERE account = #{account} AND `password` = #{password}
+    </select>
+
+    <select id="findFuncByRoleCode" resultType="java.lang.String">
+        SELECT sm.module_name FROM sys_role_fun srf
+        INNER JOIN sys_module sm
+        ON srf.module_id = sm.module_code
+        WHERE srf.role_id = #{code}
+    </select>
+
+    <resultMap id="treeNodeMap" type="com.qianfeng.manager.security.entity.TreeNode">
+        <result property="code" column="module_code"></result>
+        <result property="name" column="module_name"></result>
+        <result property="url" column="link_url"></result>
+    </resultMap>
+
+    <select id="findFuncTreeByRoleCode" resultMap="treeNodeMap">
+        SELECT sm.module_code, sm.module_name, sm.link_url FROM sys_role_fun srf
+        INNER JOIN sys_module sm
+        ON srf.module_id = sm.module_code
+        WHERE parent_module = '0101'
+        AND srf.role_id = #{code}
+        ORDER BY module_order
+    </select>
+
+    <resultMap id="childNodeMap" type="com.qianfeng.manager.security.entity.ChildNode">
+        <result property="code" column="module_code"></result>
+        <result property="name" column="module_name"></result>
+        <result property="url" column="link_url"></result>
+    </resultMap>
+
+    <select id="findChildNodeByModuleCodeAndRoleCode" resultMap="childNodeMap">
+        SELECT sm.module_code, sm.module_name, sm.link_url FROM sys_role_fun srf
+        INNER JOIN sys_module sm
+        ON srf.module_id = sm.module_code
+        WHERE parent_module = #{moduleCode}
+        AND srf.role_id = #{roleCode}
+        ORDER BY module_order
+    </select>
+
+    <resultMap id="roleMap" type="com.qianfeng.manager.security.entity.Roles">
+        <id property="code" column="role_code"></id>
+        <result property="name" column="role_name"></result>
+        <result property="desc" column="role_desc"></result>
+        <result property="order" column="role_order"></result>
+        <result property="type" column="role_type"></result>
+    </resultMap>
+
+    <select id="findRoleByCode" resultMap="roleMap">
+        SELECT * FROM sys_role WHERE role_code = #{id}
+    </select>
+</mapper>
+
+
+
+
+
+
+
